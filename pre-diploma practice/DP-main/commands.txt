@@ -1,0 +1,67 @@
+Перетворення відео у фотографії, які зберігаються де було відео у папці (photos_with_video)
+# -- convert_video_to_photo.py
+	python scripts/convert_video_to_photo.py \
+	-i=C:\Users\PC\Desktop\media\VID_20210901_124602.mp4
+
+Для анотації забражеть (розметки) -- https://github.com/wkentaro/labelme
+# -- labelme	або		labelimg
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+Рандомно з папки def_marker розккидуємо зображеня у папці images у підпапки (train, test)
+# 0 - Partion dataset (r=0.1 ==> Train=90%, Test=10%)
+	python scripts/partition_dataset.py -x -i [PATH_TO_IMAGES_FOLDER] -o [PATH_TO_OUTPUT_FOLDER] -r 0.1
+	python scripts/partition_dataset.py -x -i def_marker -o images -r 0.1
+
+#1 --> #4 Вже прописані в батніку (create_label_tfrecord.cmd)
+З файла в папці images (class-names.txt) генеруємо нотації для нейронки 
+# 1 - Generate label_map
+	python scripts/generate_labelmap.py -i images/class-names.txt
+
+
+# 2 - Convert xml_to_csv  -- не обовз'яковий (частина кода з пунктів #3 і #4)
+	python scripts/xml_to_csv.py
+
+
+# 3 - Create train data
+	python scripts/generate_tfrecord.py -x images/train -l annotations/label_map.pbtxt -o annotations/train.record
+
+
+# 4 - Create test data
+	python scripts/generate_tfrecord.py -x images/test -l annotations/label_map.pbtxt -o annotations/test.record
+
+
+
+# 5 - Train model
+	python object_detection/model_main_tf2.py --pipeline_config_path=models/ssd_efficientdet_d0_512x512_coco17_tpu-8.config --model_dir=pre_trained_models/my_model --num_train_steps=5000
+
+	#Linux
+	python ../tensorflow/models/research/object_detection/model_main_tf2.py \
+	--pipeline_config_path=DM/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config \
+	--model_dir=DM/models/my_trained \
+	--num_train_steps=5000 \
+	--alsologtostderr
+
+	#Windows
+	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DM/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --model_dir=DM/models/my_trained --num_train_steps=1000 --alsologtostderr
+	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DM/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config --model_dir=DM/models/my_trained --num_train_steps=1000 --alsologtostderr
+
+
+# 6 - Export 
+	python object_detection/exporter_main_v2.py --input_type=image_tensor --trained_checkpoint_dir=pre_trained_models/my_model --pipeline_config_path=models/ssd_efficientdet_d0_512x512_coco17_tpu-8.config --output_directory=exported_model
+
+	python ../tensorflow/models/research/object_detection/exporter_main_v2.py \
+	--input_type=image_tensor \
+	--trained_checkpoint_dir=models/my_trained \
+	--pipeline_config_path=DM/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config \
+	--output_directory=models/exported
+
+	python tensorflow/models/research/object_detection/exporter_main_v2.py --input_type=image_tensor --trained_checkpoint_dir=DM/models/my_trained --pipeline_config_path=DM/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --output_directory=DM/models/exported
+
+
+# 7 - Run Tesboard see graph
+	tensorboard --logdir=DM/models/my_trained
+	
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
