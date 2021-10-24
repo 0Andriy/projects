@@ -13,7 +13,10 @@
 	python scripts/partition_dataset.py -x -i [PATH_TO_IMAGES_FOLDER] -o [PATH_TO_OUTPUT_FOLDER] -r 0.1
 	python scripts/partition_dataset.py -x -i def_marker -o images -r 0.1
 
+
 #1 --> #4 Вже прописані в батніку (create_label_tfrecord.cmd)
+
+
 З файла в папці images (class-names.txt) генеруємо нотації для нейронки 
 # 1 - Generate label_map
 	python scripts/generate_labelmap.py -i images/class-names.txt
@@ -43,8 +46,8 @@
 	--alsologtostderr
 
 	#Windows
-	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DM/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --model_dir=DM/models/my_trained --num_train_steps=1000 --alsologtostderr
-	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DM/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config --model_dir=DM/models/my_trained --num_train_steps=1000 --alsologtostderr
+	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DP-main/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --model_dir=DP-main/models/my_trained --num_train_steps=1000 --alsologtostderr
+	python tensorflow/models/research/object_detection/model_main_tf2.py --pipeline_config_path=DP-main/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config --model_dir=DP-main/models/my_trained --num_train_steps=1000 --alsologtostderr
 
 
 # 6 - Export 
@@ -56,7 +59,7 @@
 	--pipeline_config_path=DM/models/pre_train/efficientdet_d4_coco17_tpu-32/pipeline.config \
 	--output_directory=models/exported
 
-	python tensorflow/models/research/object_detection/exporter_main_v2.py --input_type=image_tensor --trained_checkpoint_dir=DM/models/my_trained --pipeline_config_path=DM/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --output_directory=DM/models/exported
+	python tensorflow/models/research/object_detection/exporter_main_v2.py --input_type=image_tensor --trained_checkpoint_dir=DP-main/models/my_trained --pipeline_config_path=DP-main/models/pre_train/efficientdet_d0_coco17_tpu-32/pipeline.config --output_directory=DP-main/models/exported
 
 
 # 7 - Run Tesboard see graph
