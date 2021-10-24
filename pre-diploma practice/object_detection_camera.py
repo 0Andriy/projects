@@ -26,11 +26,11 @@ tf.gfile = tf.io.gfile
 
 
 # List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = './DM/annotations/label_map.pbtxt'
+PATH_TO_LABELS = './DP-main/annotations/label_map.pbtxt'
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 print(category_index)
 
-fine_tuned_model = "./DM/models/exported"
+fine_tuned_model = "./DP-main/models/exported"
 
 model_dir = pathlib.Path(fine_tuned_model)/"saved_model"
 print(model_dir)
